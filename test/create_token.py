@@ -16,10 +16,12 @@ playod = {
     }
 }
 key='test_key'
-token_data=jwt.encode(playod,key,algorithm='HS256')
+token_data=jwt.encode(playod,key,algorithm='HS256',headers={'kid':'244'})
 print(token_data)
 try:
     pasre_token=jwt.decode(token_data,key,algorithms='HS256')
+    print(pasre_token)
+    # print(jwt.get_unverified_header(encoded))
 except exceptions.ExpiredSignatureError:
     print('token已过期')
 except jwt.DecodeError:
