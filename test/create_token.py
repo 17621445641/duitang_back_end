@@ -16,18 +16,24 @@ playod = {
     }
 }
 key='test_key'
-token_data=jwt.encode(playod,key,algorithm='HS256',headers=headers)#headers可不写，默认会进行加密
-print(token_data)
-try:
-    pasre_token=jwt.decode(token_data,key,algorithms='HS256',headers=headers)
-    print(pasre_token)
-    # print(jwt.get_unverified_header())
-except exceptions.ExpiredSignatureError:
-    print('token已过期')
-except jwt.DecodeError:
-    print("token认证失败")
-except jwt.InvalidTokenError:
-    print("非法的token")
-else:
-    print("正确解析")
+# token_data=jwt.encode(playod,key,algorithm='HS256',headers=headers)#headers可不写，默认会进行加密
+# print(token_data)
+token_data='eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE2NTM1NTA1ODIsImlhdCI6MTY1MzQ2NDE4MiwiaXNzIjoia3hwIiwiZGF0YSI6eyJ1c2VyaWQiOjF9fQ.MpFJTnNTlGA6xA1VAmi1UHlfn05-eKepxbcg0Y7GlHY'
+def m():
+    try:
+        parse_token=jwt.decode(token_data,key,algorithms='HS256')
+        print(parse_token)
+        # print(jwt.get_unverified_header())
+    except exceptions.ExpiredSignatureError:
+        print('token已过期')
+    except jwt.DecodeError:
+        print("token认证失败")
+    except jwt.InvalidTokenError:
+        print("非法的token")
+    else:
+        # return parse_token
+        # parse_token = jwt.decode(token_data, key, algorithms='HS256', headers=headers)
+        # print(parse_token)
+        print("正确解析")
 
+m()
