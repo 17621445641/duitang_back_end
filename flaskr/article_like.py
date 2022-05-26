@@ -67,4 +67,4 @@ def article_like(app):
             sql="select  a.user_id,b.id,b.article_title,author_id,article_content,view_status,b.create_time,b.update_time from article_like as a INNER JOIN article as b on a.article_id=b.id and a.like_status=1 and a.user_id='%s'"%(userid)
             res=db_setting.my_db(sql)
             print (res)
-            return res
+            return "44"
