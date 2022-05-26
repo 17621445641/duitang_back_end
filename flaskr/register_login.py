@@ -1,4 +1,5 @@
 from flask import request
+from datetime import datetime
 import security
 import json
 import db_setting
@@ -17,11 +18,9 @@ def auth(app):
                 token=security.generate_token(userid)#生成token
                 return token
             else:
-                message = {'message': '账户或密码错误'}
-                return json.dumps(message, ensure_ascii=False, indent=4)
+                return '账户或密码错误'
         else:
-            message = {'message':'用户暂未注册'}
-            return json.dumps(message, ensure_ascii=False, indent=4)
+            return '用户未注册'
 
     @app.route('/register', methods=['post'])
     def register(): # 注册接口
@@ -33,8 +32,13 @@ def auth(app):
             return '账户已注册'
         else:
             if(pwd==sec_pwd):
-                sql1="INSERT into user_account(account,password) values('%s','%s')"% (account,pwd)
-                b=db_setting.my_db(sql1)
-                return b
+                create_time=datetime.utcnow()
+                sql1="INSERT into user_account(account,password,create_time) values('%s','%s','%s')"% (account,pwd,create_time)
+                db_setting.my_db(sql1)
+                sql2="select id from user_account where account='%s'"%(account)#查询之前插入的数据的id
+                account_id=db_setting.my_db(sql2)[0][0]
+                sql3="INSERT into user_message(account_id,update_time) values('%s','%s')"% (account_id,create_time)
+                db_setting.my_db(sql3)
+                return '注册成功'
             else:
                 return  "两次密码输入不一致"
