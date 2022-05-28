@@ -1,5 +1,5 @@
-from flask import Flask,request
-from flaskr import db
+from flask import request
+from test import db
 import json
 def tt(server):
     sql = 'SELECT * from user_message '
@@ -13,7 +13,7 @@ def tt(server):
         sex = request.json.get('password')
         # token=request.headers['access_token']#获取header里的token
         if(user_name=="测试用户" and sex=='男'):
-            res=db.my_db(sql)
+            res= db.my_db(sql)
             tinydict = {'Name': '', 'Age': '', 'sex': ''}
             tinydict['Name']=res[0][1]
             tinydict['Age'] = res[0][3].strftime('%Y-%m-%d')

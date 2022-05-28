@@ -1,8 +1,8 @@
 from flask import request
 from datetime import datetime
-import security
-import json
-import db_setting
+from flaskr.common_method import db_setting, security
+
+
 def auth(app):
 
     @app.route('/login',methods=['post'])
@@ -11,11 +11,11 @@ def auth(app):
         pwd = request.json.get('password')
         sql = "SELECT * from user_account where account='%s' " % (account)  # 查询用户是否已注册
         if(len(db_setting.my_db(sql))!=0):#判断用户是否已注册
-            userid=db_setting.my_db(sql)[0][0]#查询用户id
+            userid= db_setting.my_db(sql)[0][0]#查询用户id
             user_account = db_setting.my_db(sql)[0][1]  # 查询用户账户
             user_pwd = db_setting.my_db(sql)[0][2]  # 查询用户密码
             if(account==user_account and pwd==user_pwd):#判断账户和密码是否一致
-                token=security.generate_token(userid)#生成token
+                token= security.generate_token(userid)#生成token
                 return token
             else:
                 return '账户或密码错误'
@@ -36,7 +36,7 @@ def auth(app):
                 sql1="INSERT into user_account(account,password,create_time) values('%s','%s','%s')"% (account,pwd,create_time)
                 db_setting.my_db(sql1)
                 sql2="select id from user_account where account='%s'"%(account)#查询之前插入的数据的id
-                account_id=db_setting.my_db(sql2)[0][0]
+                account_id= db_setting.my_db(sql2)[0][0]
                 sql3="INSERT into user_message(account_id,update_time) values('%s','%s')"% (account_id,create_time)
                 db_setting.my_db(sql3)
                 return '注册成功'

@@ -1,7 +1,8 @@
-from flask import Flask,request
+from flask import request,Response
 from datetime import datetime
-import security
-import db_setting
+import json
+from flaskr.common_method import db_setting, security, list_method
+
 def article_like(app):
     @app.route('/article_like', methods=['post'])
     def dislike_like():  # 文章喜欢和取消喜欢
@@ -53,7 +54,7 @@ def article_like(app):
                 return 'article_id字段不能为空'
 
     @app.route('/like_list', methods=['get'])
-    def like_list():  # 喜欢列表
+    def like_list():  # 查询用户喜欢列表
         token = request.headers['access_token']  # 获取header里的token
         parse_token = security.parse_token(token)  # 解析token
         if (parse_token == 1):
@@ -64,7 +65,8 @@ def article_like(app):
             return '非法的token'
         else:
             userid = (parse_token['data']['userid'])  # 查询用户id
-            sql="select  a.user_id,b.id,b.article_title,author_id,article_content,view_status,b.create_time,b.update_time from article_like as a INNER JOIN article as b on a.article_id=b.id and a.like_status=1 and a.user_id='%s'"%(userid)
-            res=db_setting.my_db(sql)
-            print (res)
-            return "44"
+            sql="select  a.user_id,b.id,b.article_title,author_id,article_content,view_status,b.create_time,b.update_time from article_like as a INNER JOIN article as b on a.article_id=b.id and a.user_id='%s' and a.like_status=1 and article_id not in(select article_id from article_like as a INNER JOIN article as b on a.article_id=b.id and user_id!=author_id and view_status=0 and user_id='%s')"%(userid,userid)
+            dict = {'user_id': '', 'article_id': '', 'article_title': '', 'author_id': '', 'article_content': '',
+                    'view_status': '', 'create_time': ''}
+            like_list= list_method.list_method(sql, dict)
+            return Response(json.dumps(like_list,ensure_ascii=False),mimetype='application/json')

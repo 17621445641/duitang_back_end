@@ -16,7 +16,7 @@ def generate_token(userid):#token生成
     token_data = jwt.encode(playod, key, algorithm='HS256')
     return token_data
 
-def parse_token(token_data):#解析token
+def parse_token(token_data):#解析token校验是否合法
     try:
         parse_token=jwt.decode(token_data,key,algorithms='HS256')
     except exceptions.ExpiredSignatureError:

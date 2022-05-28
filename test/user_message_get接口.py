@@ -1,12 +1,12 @@
-from flask import Flask,request
-from flaskr import db
+from flask import Flask
+from test import db
 import json
 # from gevent import pywsgi
 server=Flask(__name__)
 sql='SELECT * from user_message '
 @server.route('/login',methods=['get'])
 def login():
-    res=db.my_db(sql)
+    res= db.my_db(sql)
     if res:
         tinydict={'Name': '', 'Age': '', 'sex': ''}
         tinydict['Name']=res[0][1]
