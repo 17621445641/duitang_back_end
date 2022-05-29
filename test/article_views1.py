@@ -1,6 +1,6 @@
 from flask_restful import reqparse,Resource
 class article_views(Resource):
-    def post(self):
+    def post(self):#定义post接口
         parser = reqparse.RequestParser()
         parser.add_argument('article_id',required=True,help='必填')
         args=parser.parse_args()

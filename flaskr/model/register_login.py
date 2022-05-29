@@ -1,7 +1,7 @@
 from flask import request
-from datetime import datetime
+from datetime import datetime,timedelta
 from flaskr.common_method import db_setting, security
-
+import random
 
 def auth(app):
 
@@ -42,3 +42,38 @@ def auth(app):
                 return '注册成功'
             else:
                 return  "两次密码输入不一致"
+
+    @app.route('/check_account', methods=['post'])
+    def check_account():  # 检查账户是否注册接口
+        account = request.json.get('account')
+        sql = "SELECT id from user_account where account='%s' " % (account)  # 查询用户是否已注册
+        if (len(db_setting.my_db(sql)) != 0):  # 判断用户是否已注册
+            update_code = random.randint(100000, 999999)  # 随机生成6位模拟验证码校验
+            create_time = datetime.utcnow()
+            sql2 = "INSERT INTO `update_code` (`user_id`, `update_code`, `create_time`) VALUES ('%s', '%s', '%s')" % (
+            db_setting.my_db(sql)[0][0], update_code, create_time)
+            db_setting.my_db(sql2)
+            return {"code": '200', "update_code":update_code,"message": "验证码为：" + str(update_code) + ",有效期限五分钟"}
+        else:
+            return {"code": '400', "message": "账户未注册"}
+
+    @app.route('/check_code', methods=['post'])
+    def check_code():  # 检查验证码是否有效
+        account = request.json.get('account')
+        check_code=request.json.get('check_code')
+        sql = "SELECT id from user_account where account='%s' " % (account)  # 查询用户是否已注册
+        if (len(db_setting.my_db(sql)) != 0):  # 判断用户是否已注册
+            userid=db_setting.my_db(sql)[0][0]
+            sql2="SELECT * from update_code where user_id='%s' ORDER BY create_time DESC limit 1"% (userid)
+            time_now = datetime.utcnow()
+            code_time=db_setting.my_db(sql2)[0][2]#验证码创建时间
+            update_code=db_setting.my_db(sql2)[0][1]#验证码\
+            if(check_code==update_code):
+                if(time_now>code_time+timedelta(minutes=5)):
+                    return {"code": '500', "message": "验证码已失效"}
+                else:
+                    return {"code": '200', "message": "验证码验证成功"}
+            else:
+                return {"code": '500', "message": "验证码有误"}
+        else:
+            return {"code": '400', "message": "账户未注册"}

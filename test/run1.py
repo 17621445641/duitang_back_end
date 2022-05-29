@@ -1,5 +1,5 @@
 from flask import Flask
-from flask_restful import Api,Resource
+from flask_restful import Api,Resource#restful接口，和article_view1一起看
 import article_views1
 app=Flask(__name__)#创建app应用
 api=Api(app)

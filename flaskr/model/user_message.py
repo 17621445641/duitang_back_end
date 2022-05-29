@@ -18,9 +18,9 @@ def usermessage(app):
         else:
             # user_id=request.values.get('user_id')
             userid=(parse_token['data']['userid'])#查询用户id
-            sql = "SELECT * from user_message where id='%s' " % (userid)
+            sql = "select * from (SELECT * from user_message where id='%s' ) AS a INNER JOIN (select avatar_image_url,user_id from user_avatar_image where user_id='%s' ORDER BY create_time DESC LIMIT 1)as b where a.id=b.user_id" % (userid,userid)
             res = db_setting.my_db(sql)
-            tinydict = {'user_name': '', 'birthday': '', 'sex': '','hobby': '','province': '','city': '','self_description':''}
+            tinydict = {'user_name': '', 'birthday': '', 'sex': '','hobby': '','province': '','city': '','self_description':'','user_avatar':''}
             tinydict['user_name'] = res[0][2]
             tinydict['sex'] = res[0][3]
             tinydict['birthday'] = res[0][4].strftime('%Y-%m-%d')
@@ -28,6 +28,7 @@ def usermessage(app):
             tinydict['province'] = res[0][6]
             tinydict['city'] = res[0][7]
             tinydict['self_description'] = res[0][8]
+            tinydict['user_avatar'] = res[0][10]
             return Response(json.dumps(tinydict,ensure_ascii=False),mimetype='application/json')
 
     @app.route('/update_userinfo', methods=['post'])
