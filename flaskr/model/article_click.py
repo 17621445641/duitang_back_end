@@ -28,6 +28,8 @@ def article_click(app):
                             update_time, userid)
                             db_setting.my_db(sql3)
                             return "取消点赞成功"
+                        elif(db_setting.my_db(sql2) and db_setting.my_db(sql2)[0][0] == 0):
+                            return "已取消点赞失败,无法再取消点赞"
                         else:
                             return "取消点赞失败,未找到记录"
                     elif(status==1):#判断为1的时候执行点赞

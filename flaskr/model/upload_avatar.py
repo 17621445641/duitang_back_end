@@ -39,7 +39,7 @@ def upload_avatar(app):
                 return '非法的token'
             else:
                 userid = (parse_token['data']['userid'])  # 查询用户id
-                sql="INSERT INTO user_avatar_image (`user_id`, `avatar_image_url`, `create_time`) VALUES ('%s', '%s', '%s')"%(userid,image_fullpath,create_time)
+                sql="INSERT INTO user_avatar_image (`user_id`, `avatar_image_url`, `create_time`,'avatar_status') VALUES ('%s', '%s', '%s',1)"%(userid,image_fullpath,create_time)
                 db_setting.my_db(sql)
                 return {"code": '200', "image_url": image_url + file_name, "message": "上传成功"}
         else:

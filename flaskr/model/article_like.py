@@ -29,6 +29,8 @@ def article_like(app):
                             update_time, userid)
                             db_setting.my_db(sql3)
                             return "取消喜欢成功"
+                        elif(db_setting.my_db(sql2) and db_setting.my_db(sql2)[0][0] == 0):
+                            return "已取消喜欢，无法再取消喜欢"
                         else:
                             return "取消喜欢失败,未找到记录"
                     elif(status==1):#判断执行喜欢

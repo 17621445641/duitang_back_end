@@ -5,7 +5,7 @@ key = 'test_key'
 def generate_token(userid):#token生成
     playod = {
     # 'exp': datetime.datetime.now() + datetime.timedelta(seconds=3),  # 过期时间
-    'exp': datetime.utcnow() + timedelta(days=1),  # 过期时间，或者minutes,days，seconds
+    'exp': datetime.utcnow() + timedelta(days=30),  # 过期时间，或者minutes,days，seconds
     # 'iat': datetime.datetime.now(),  # 开始时间：可不设置
     'iat': datetime.utcnow(),  # 开始时间：可不设置
     'iss': 'kxp',  # 签名:可不设置

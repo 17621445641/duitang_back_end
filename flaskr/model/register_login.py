@@ -33,12 +33,14 @@ def auth(app):
         else:
             if(pwd==sec_pwd):
                 create_time=datetime.utcnow()
-                sql1="INSERT into user_account(account,password,create_time) values('%s','%s','%s')"% (account,pwd,create_time)
+                sql1="INSERT into user_account(account,password,create_time,update_time) values('%s','%s','%s','%s')"% (account,pwd,create_time,create_time)
                 db_setting.my_db(sql1)
                 sql2="select id from user_account where account='%s'"%(account)#查询之前插入的数据的id
                 account_id= db_setting.my_db(sql2)[0][0]
                 sql3="INSERT into user_message(account_id,update_time) values('%s','%s')"% (account_id,create_time)
                 db_setting.my_db(sql3)
+                sql4="INSERT INTO `user_avatar_image` (`user_id`,create_time) VALUES ('%s','%s')"% (account_id,create_time)
+                db_setting.my_db(sql4)
                 return '注册成功'
             else:
                 return  "两次密码输入不一致"
@@ -75,5 +77,22 @@ def auth(app):
                     return {"code": '200', "message": "验证码验证成功"}
             else:
                 return {"code": '500', "message": "验证码有误"}
+        else:
+            return {"code": '400', "message": "账户未注册"}
+
+    @app.route('/update_pwd', methods=['post'])
+    def update_pwd():  # 忘记密码/修改密码修改
+        account = request.json.get('account')
+        pwd = request.json.get('password')
+        sec_pwd = request.json.get('Confirm_password')
+        sql = "SELECT * from user_account where account='%s' " % (account)  # 查询用户是否已注册
+        if (len(db_setting.my_db(sql)) != 0):  # 判断用户是否已注册
+            if (pwd == sec_pwd):
+                update_time=datetime.utcnow()
+                sql2="UPDATE `user_account` SET  `password` = '%s', `update_time` = '%s' WHERE `id` = '%s'"%(pwd,update_time,db_setting.my_db(sql)[0][0])
+                db_setting.my_db(sql2)
+                return {"code": '200', "message": "修改密码成功"}
+            else:
+                return {"code": '500', "message": "两次密码不一致"}
         else:
             return {"code": '400', "message": "账户未注册"}
