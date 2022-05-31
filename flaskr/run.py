@@ -8,6 +8,6 @@ article_click.article_click(app)#文章点赞和取消点赞
 article_like.article_like(app)#文章喜欢和取消喜欢和喜欢列表
 article_views.article_views(app)#文章浏览记录新增，获取文章浏览量，用户浏览记录
 upload_avatar.upload_avatar(app)#用户头像上传
-follow_fans.follow_fans(app)
+follow_fans.follow_fans(app)#用户关注/取消关注，查询用户关注和粉丝列表
 if __name__=='__main__':
     app.run(debug=True, host='127.0.0.1', port=8998 )
