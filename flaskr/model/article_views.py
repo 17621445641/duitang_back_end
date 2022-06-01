@@ -21,13 +21,13 @@ def article_views(app):
                             sql3="UPDATE article_views SET view_count='%s',update_time = '%s' WHERE user_id = '%s' and article_id='%s'" % (
                                     view_count,update_time, user_id,article_id)
                             db_setting.my_db(sql3)
-                            return "浏览记录增加成功"
+                            return {"code": 200, "message": "浏览记录增加成功","success":"true"}
                         else:
                             create_time = datetime.utcnow()
                             sql4 = "INSERT INTO article_views (user_id, article_id, view_count, create_time, update_time) VALUES ( '%s', '%s', '%s', '%s', '%s')" % (
                                 user_id, article_id, 1, create_time, create_time)
                             db_setting.my_db(sql4)
-                            return '新增浏览记录成功'
+                            return {"code": 200, "message": '新增浏览记录成功',"success":"true"}
                     else:
                         sql2 = "select view_count from article_views where user_id is null and article_id='%s'" % (article_id)  # 查询数据库表中是否有记录
                         if (db_setting.my_db(sql2)):  # 查询是否有游客用户浏览记录
@@ -36,17 +36,17 @@ def article_views(app):
                             sql3 = "UPDATE article_views SET view_count='%s',update_time = '%s' WHERE user_id is null and article_id='%s'" % (
                                 view_count, update_time,article_id)
                             db_setting.my_db(sql3)
-                            return "游客浏览记录增加成功"
+                            return {"code": 200, "message": "游客浏览记录增加成功","success":"true"}
                         else:
                             create_time = datetime.utcnow()
                             sql4 = "INSERT INTO article_views ( article_id, view_count, create_time, update_time) VALUES (  '%s', '%s', '%s', '%s')" % (
                                  article_id, 1, create_time, create_time)
                             db_setting.my_db(sql4)
-                            return '新增游客浏览记录成功'
+                            return {"code": 200, "message": '新增游客浏览记录成功',"success":"true"}
                 else:
-                    return '不存在的文章'
+                    return {"code": 500, "message": '不存在的文章',"success":"false"}
             else:
-                return 'article_id字段不能为空'
+                return {"code": 500, "message": 'article_id字段不能为空',"success":"false"}
 
     @app.route('/views_count', methods=['get'])
     def views_count():#查询文章的浏览量
@@ -62,18 +62,19 @@ def article_views(app):
                 super(DecimalEncoder, self).default(o)
         views_count= db_setting.my_db(sql)[0][0]
         tinydict['views_count']=views_count
-        return Response(json.dumps(tinydict,ensure_ascii=False,cls=DecimalEncoder),mimetype='application/json')
+        return {"code": 200, "message": "ok", "data": tinydict, "success": "true"}
+        # return Response(json.dumps(tinydict,ensure_ascii=False,cls=DecimalEncoder),mimetype='application/json')
 
     @app.route('/views_list', methods=['get'])
     def views_list():  # 查询用户浏览列表
         token = request.headers['access_token']  # 获取header里的token
         parse_token = security.parse_token(token)  # 解析token
         if (parse_token == 1):
-            return 'token已过期'
+            return {"code": 1, "message": "token已过期","success": "false"}
         elif (parse_token == 2):
-            return 'token认证失败'
+            return {"code": 2, "message": "token认证失败","success": "false"}
         elif (parse_token == 3):
-            return '非法的token'
+            return {"code": 3, "message": "非法的token","success": "false"}
         else:
             userid = (parse_token['data']['userid'])  # 查询用户id
             sql = "select  a.user_id,b.id,b.article_title,author_id,article_content,view_status,b.create_time,b.update_time from article_views as a INNER JOIN article as b on a.article_id=b.id and a.user_id='%s' and article_id not in(select article_id from article_views as a INNER JOIN article as b on a.article_id=b.id and user_id!=author_id and view_status=0 and user_id='%s')" % (
@@ -81,4 +82,6 @@ def article_views(app):
             dict = {'user_id': '', 'article_id': '', 'article_title': '', 'author_id': '', 'article_content': '',
                     'view_status': '', 'create_time': ''}
             views_list = list_method.list_method(sql, dict)
-            return Response(json.dumps(views_list, ensure_ascii=False), mimetype='application/json')
+            return {"code": 200, "message": "ok", "data": views_list, "success": "true"}
+
+            # return Response(json.dumps(views_list, ensure_ascii=False), mimetype='application/json')

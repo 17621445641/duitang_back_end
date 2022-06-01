@@ -1,5 +1,6 @@
 from flask import Flask
 from flaskr.model import article_click, article_like, article_views, register_login, user_message,upload_avatar,follow_fans
+
 app=Flask(__name__)#创建app应用
 #调用其他文件下的
 register_login.auth(app)#注册和登录

@@ -32,18 +32,18 @@ def upload_avatar(app):
             image_fullpath=image_url + file_name#拼接完整路径用来保存数据库中
             create_time=datetime.utcnow()
             if (parse_token == 1):
-                return 'token已过期'
+                return {"code": 1, "message": "token已过期", "success": "false"}
             elif (parse_token == 2):
-                return 'token认证失败'
+                return {"code": 2, "message": "token认证失败", "success": "false"}
             elif (parse_token == 3):
-                return '非法的token'
+                return {"code": 3, "message": "非法的token", "success": "false"}
             else:
                 userid = (parse_token['data']['userid'])  # 查询用户id
                 sql="INSERT INTO user_avatar_image (`user_id`, `avatar_image_url`, `create_time`,'avatar_status') VALUES ('%s', '%s', '%s',1)"%(userid,image_fullpath,create_time)
                 db_setting.my_db(sql)
-                return {"code": '200', "image_url": image_url + file_name, "message": "上传成功"}
+                return {"code": '200', "image_url": image_url + file_name, "message": "上传成功", "success": "true"}
         else:
-            return "格式错误，仅支持jpg、png、jpeg格式文件"
+            return {"code": 500, "message": "格式错误，仅支持jpg、png、jpeg格式文件","success":"false"}
 
 
 # from flask import Flask, request, Response, render_template
