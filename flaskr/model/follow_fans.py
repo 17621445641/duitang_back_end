@@ -75,7 +75,7 @@ def follow_fans(app):
             return {"code": 3, "message": "非法的token", "success": "false"}
         else:
             userid = (parse_token['data']['userid'])  # 查询用户id
-            sql = "select * from (SELECT user_avatar_image.user_id as user_id,avatar_image_url FROM user_avatar_image INNER JOIN ( SELECT user_id,max(create_time)AS create_time  from user_avatar_image GROUP BY user_id )AS C ON user_avatar_image.user_id=C.user_id AND user_avatar_image.create_time=C.create_time) as b INNER JOIN  (select follow_user_id,be_follow_user_id,name,sex,province,city,follow_status,follow_history.update_time as follow_time from user_message INNER JOIN follow_history on account_id=follow_user_id and follow_user_id='%s' and follow_status=1)as a on user_id=be_follow_user_id order by follow_time  DESC" % (
+            sql = "select * from (SELECT user_avatar_image.user_id as user_id,avatar_image_url FROM user_avatar_image INNER JOIN ( SELECT user_id,max(create_time)AS create_time  from user_avatar_image GROUP BY user_id )AS C ON user_avatar_image.user_id=C.user_id AND user_avatar_image.create_time=C.create_time) as b INNER JOIN  (select follow_user_id,be_follow_user_id,name,sex,province,city,follow_status,follow_history.update_time as follow_time from user_message INNER JOIN follow_history on account_id=be_follow_user_id and follow_user_id='%s' and follow_status=1)as a on user_id=be_follow_user_id order by follow_time  DESC" % (
                 userid)
             dict = {'user_id': '', 'avatar_image_url': '', 'follow_user_id':'','be_follow_user_id':'', 'name': '', 'sex': '',
                     'province': '', 'city': '', 'follow_status': '', 'follow_time': ''}
@@ -95,7 +95,7 @@ def follow_fans(app):
             return {"code": 3, "message": "非法的token", "success": "false"}
         else:
             userid = (parse_token['data']['userid'])  # 查询用户id
-            sql = "select * from (SELECT user_avatar_image.user_id as user_id,avatar_image_url FROM user_avatar_image INNER JOIN ( SELECT user_id,max(create_time)AS create_time  from user_avatar_image GROUP BY user_id )AS C ON user_avatar_image.user_id=C.user_id AND user_avatar_image.create_time=C.create_time) as b INNER JOIN  (select follow_user_id,be_follow_user_id,name,sex,province,city,follow_status,follow_history.update_time as follow_time from user_message INNER JOIN follow_history on account_id=be_follow_user_id and be_follow_user_id='%s' and follow_status=1)as a on user_id=follow_user_id order by follow_time DESC" % (
+            sql = "select * from (SELECT user_avatar_image.user_id as user_id,avatar_image_url FROM user_avatar_image INNER JOIN ( SELECT user_id,max(create_time)AS create_time  from user_avatar_image GROUP BY user_id )AS C ON user_avatar_image.user_id=C.user_id AND user_avatar_image.create_time=C.create_time) as b INNER JOIN  (select follow_user_id,be_follow_user_id,name,sex,province,city,follow_status,follow_history.update_time as follow_time from user_message INNER JOIN follow_history on account_id=follow_user_id and be_follow_user_id='%s' and follow_status=1)as a on user_id=follow_user_id order by follow_time DESC" % (
                 userid)
             dict = {'user_id': '', 'avatar_image_url': '', 'follow_user_id':'','be_follow_user_id':'', 'name': '', 'sex': '',
                     'province': '', 'city': '', 'follow_status': '', 'follow_time': ''}

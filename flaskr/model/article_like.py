@@ -21,12 +21,12 @@ def article_like(app):
             if (article_id):  # 判断是否传了article_id字段
                 sql = "select id from article where id='%s'" % (article_id)
                 if (db_setting.my_db(sql)):  # 查询是否含有此文章id
-                    sql2 = "select like_status from article_like where user_id='%s'" % (userid)#查询数据库表中是否有记录
+                    sql2 = "select like_status from article_like where user_id='%s' and article_id='%s'" % (userid,article_id)#查询数据库表中是否有记录
                     if(status==0): #判断执行取消喜欢
                         if (db_setting.my_db(sql2) and db_setting.my_db(sql2)[0][0] == 1):  # 查询是否用户已喜欢，未有记录则插入一条喜欢记录,已有记录且状态为未喜欢，则进行喜欢
                             update_time = datetime.utcnow()
-                            sql3 = "UPDATE article_like SET like_status=0,update_time = '%s' WHERE user_id = '%s'" % (
-                            update_time, userid)
+                            sql3 = "UPDATE article_like SET like_status=0,update_time = '%s' WHERE user_id = '%s'and article_id='%s' " % (
+                            update_time, userid,article_id)
                             db_setting.my_db(sql3)
                             return {"code": 200, "message": "取消喜欢成功","success":"true"}
                         elif(db_setting.my_db(sql2) and db_setting.my_db(sql2)[0][0] == 0):
@@ -36,8 +36,8 @@ def article_like(app):
                     elif(status==1):#判断执行喜欢
                         if (db_setting.my_db(sql2) and db_setting.my_db(sql2)[0][0] == 0):
                             update_time = datetime.utcnow()
-                            sql3 = "UPDATE article_like SET like_status=1,update_time = '%s' WHERE user_id = '%s'" % (
-                                update_time, userid)
+                            sql3 = "UPDATE article_like SET like_status=1,update_time = '%s' WHERE user_id = '%s' and article_id='%s'" % (
+                                update_time, userid,article_id)
                             db_setting.my_db(sql3)
                             return {"code": 200, "message": "更新喜欢成功","success":"true"}
                         elif(db_setting.my_db(sql2) and db_setting.my_db(sql2)[0][0] == 1):

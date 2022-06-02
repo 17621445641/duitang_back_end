@@ -20,12 +20,12 @@ def article_click(app):
             if (article_id):  # 判断是否传了article_id字段
                 sql = "select id from article where id='%s'" % (article_id)
                 if (db_setting.my_db(sql)):  # 查询是否含有此文章id
-                    sql2 = "select click_status from article_click where user_id='%s'" % (userid)#查询数据库表中是否有记录
+                    sql2 = "select click_status from article_click where user_id='%s'and article_id='%s'" % (userid,article_id)#查询数据库表中是否有记录
                     if(status==0): #判断为0的时候执行取消点赞
                         if (db_setting.my_db(sql2) and db_setting.my_db(sql2)[0][0] == 1):  # 查询是否用户已点赞，未有记录则插入一条点赞记录,已有记录且状态为未点赞，则进行点赞
                             update_time = datetime.utcnow()
-                            sql3 = "UPDATE article_click SET click_status=0,update_time = '%s' WHERE user_id = '%s'" % (
-                            update_time, userid)
+                            sql3 = "UPDATE article_click SET click_status=0,update_time = '%s' WHERE user_id = '%s' and article_id='%s'" % (
+                            update_time, userid,article_id)
                             db_setting.my_db(sql3)
                             return {"code": 200, "message": "取消点赞成功","success":"true"}
                         elif(db_setting.my_db(sql2) and db_setting.my_db(sql2)[0][0] == 0):
@@ -35,8 +35,8 @@ def article_click(app):
                     elif(status==1):#判断为1的时候执行点赞
                         if (db_setting.my_db(sql2) and db_setting.my_db(sql2)[0][0] == 0):
                             update_time = datetime.utcnow()
-                            sql3 = "UPDATE article_click SET click_status=1,update_time = '%s' WHERE user_id = '%s'" % (
-                                update_time, userid)
+                            sql3 = "UPDATE article_click SET click_status=1,update_time = '%s' WHERE user_id = '%s' and article_id='%s'" % (
+                                update_time, userid,article_id)
                             db_setting.my_db(sql3)
                             return {"code": 200, "message": "更新点赞成功","success":"true"}
                         elif(db_setting.my_db(sql2) and db_setting.my_db(sql2)[0][0] == 1):
