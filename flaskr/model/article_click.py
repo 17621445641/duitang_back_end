@@ -66,10 +66,10 @@ def article_click(app):
             return {"code": 3, "message": "非法的token", "success": "false"}
         else:
             userid = (parse_token['data']['userid'])  # 查询用户id
-            sql = "select  a.user_id,b.id,b.article_title,author_id,article_content,view_status,b.create_time,b.update_time from article_click as a INNER JOIN article as b on a.article_id=b.id and a.user_id='%s' and a.click_status=1 and article_id not in(select article_id from article_click as a INNER JOIN article as b on a.article_id=b.id and user_id!=author_id and view_status=0 and user_id='%s')" % (
+            sql = "select  a.user_id,b.id,b.article_title,author_id,article_content,view_status,b.create_time as article_createtime,a.update_time as click_time from article_click as a INNER JOIN article as b on a.article_id=b.id and a.user_id='%s' and a.click_status=1 and article_id not in(select article_id from article_click as a INNER JOIN article as b on a.article_id=b.id and user_id!=author_id and view_status=0 and user_id='%s')ORDER BY click_time DESC" % (
                 userid,userid)
             dict = {'user_id': '', 'article_id': '', 'article_title': '', 'author_id': '', 'article_content': '',
-                    'view_status': '', 'create_time': ''}
+                    'view_status': '', 'article_create_time': '','click_time':''}
             click_list = list_method.list_method(sql, dict)
             return {"code": 200, "message": "ok","data":click_list,"success":"true"}
         # return Response(json.dumps(like_list, ensure_ascii=False), mimetype='application/json')#返回json串
