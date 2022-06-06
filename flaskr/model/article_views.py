@@ -2,7 +2,8 @@ import decimal
 from flask import request,Response
 from datetime import datetime
 import json
-from flaskr.common_method import db_setting,security,list_method
+import requests
+from flaskr.common_method import db_setting,security,list_method,splicing_list
 
 
 def article_views(app):
@@ -77,11 +78,21 @@ def article_views(app):
             return {"code": 3, "message": "非法的token","success": "false"}
         else:
             userid = (parse_token['data']['userid'])  # 查询用户id
-            sql = "select  a.user_id,b.id,b.article_title,author_id,article_content,view_status,b.create_time,b.update_time from article_views as a INNER JOIN article as b on a.article_id=b.id and a.user_id='%s' and article_id not in(select article_id from article_views as a INNER JOIN article as b on a.article_id=b.id and user_id!=author_id and view_status=0 and user_id='%s')" % (
+            sql = "select  a.user_id,b.id,b.article_title,author_id,article_content,view_status,b.create_time as article_createtime,a.update_time as views_time from article_views as a INNER JOIN article as b on a.article_id=b.id and a.user_id='%s'  and article_id not in(select article_id from article_views as a INNER JOIN article as b on a.article_id=b.id and user_id!=author_id and view_status=0 and user_id='%s')ORDER BY views_time DESC" % (
                 userid,userid)
             dict = {'user_id': '', 'article_id': '', 'article_title': '', 'author_id': '', 'article_content': '',
-                    'view_status': '', 'create_time': ''}
+                    'view_status': '', 'article_create_time': '','views_time':''}
             views_list = list_method.list_method(sql, dict)
-            return {"code": 200, "message": "ok", "data": views_list, "success": "true"}
+            resp = []
+            for num in views_list:
+                for i in num.keys():
+                    if (i == 'author_id'):
+                        url = 'http://127.0.0.1:8998/get_avatar'
+                        params = {'user_id': num[i]}
+                        headers = {'access_token': token}
+                        data_m = requests.get(url=url, params=params, headers=headers)
+                        resp.append(data_m.json()['data'])
+            last_list = splicing_list.splicing_list(views_list, resp)
+            return {"code": 200, "message": "ok", "data": last_list, "success": "true"}
 
             # return Response(json.dumps(views_list, ensure_ascii=False), mimetype='application/json')

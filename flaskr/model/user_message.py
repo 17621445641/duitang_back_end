@@ -61,9 +61,9 @@ def usermessage(app):
             return {"code": 3, "message": "非法的token", "success": "false"}
         else:
             userid = request.values.get('user_id')
-            sql = "SELECT user_id,name,avatar_image_url from user_message INNER JOIN user_avatar_image on account_id=user_id and user_id='%s'" % (
+            sql = "SELECT name,avatar_image_url from user_message INNER JOIN user_avatar_image on account_id=user_id and user_id='%s' order by create_time DESC limit 1" % (
             userid)
-            tinydict={'user_id':"",'name': '', 'avatar_image_url': ''}
+            tinydict={'name': '', 'avatar_image_url': ''}
             list_method.list_method(sql,tinydict)
             return {"code": 200, "message": "ok", "data": tinydict, "success": "true"}
 

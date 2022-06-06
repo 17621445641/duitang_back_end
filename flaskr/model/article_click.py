@@ -1,6 +1,7 @@
 from flask import request,Response
 from datetime import datetime
-from flaskr.common_method import db_setting, security,list_method
+from flaskr.common_method import db_setting, security,list_method,splicing_list
+import requests
 import json
 def article_click(app):
     @app.route('/article_click', methods=['post'])
@@ -71,5 +72,16 @@ def article_click(app):
             dict = {'user_id': '', 'article_id': '', 'article_title': '', 'author_id': '', 'article_content': '',
                     'view_status': '', 'article_create_time': '','click_time':''}
             click_list = list_method.list_method(sql, dict)
-            return {"code": 200, "message": "ok","data":click_list,"success":"true"}
+            resp=[]
+            for num in click_list:
+                for i in num.keys():
+                    if(i=='author_id'):
+                        url='http://127.0.0.1:8998/get_avatar'
+                        params={'user_id': num[i]}
+                        headers={'access_token':token}
+                        data_m=requests.get(url=url,params=params,headers=headers)
+                        resp.append(data_m.json()['data'])
+            last_list=splicing_list.splicing_list(click_list,resp)
+            # print(last_list)
+            return {"code": 200, "message": "ok","data":last_list,"success":"true"}
         # return Response(json.dumps(like_list, ensure_ascii=False), mimetype='application/json')#返回json串
