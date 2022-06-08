@@ -9,14 +9,15 @@ def upload_avatar(app):
     allow_format = ['png', 'jpg', 'jpeg']  # 允许图片上传格式
     upload_folder = './static/avatar_images/'
     image_url = 'http://127.0.0.1:8998/static/avatar_images/'
-    # def after_request(Response):  # 跨域支持
-    #     Response.header['Access-Control-Allow-Origin'] = '*'
-    #     return Response
-
+    # def after_request(resp):  # 跨域支持
+    #     resp.header['Access-Control-Allow-Origin'] = '*'
+    #     return resp
+    #
+    # app.after_request(after_request)
     # 判断文件后缀是否在列表中
     def allowed_file(filename):
         return '.' in filename and filename.rsplit('.', 1)[-1] in allow_format
-    # app.after_request(after_request)
+
     @app.route('/upload_avatar', methods=['post'])#更新用户头像接口
     def upload_avatar():  # 用户头像上传
         avatar_image = request.files['file']
@@ -28,6 +29,7 @@ def upload_avatar(app):
             file_name = first_name + '.' + file_suffix
             avatar_image.save(os.path.join(upload_folder, file_name))#保存图片到指定目录
             token = request.headers['access_token']  # 获取header里的token
+            print(token)
             parse_token = security.parse_token(token)  # 解析token
             image_fullpath=image_url + file_name#拼接完整路径用来保存数据库中
             create_time=datetime.utcnow()
@@ -39,7 +41,6 @@ def upload_avatar(app):
                 return {"code": 3, "message": "非法的token", "success": "false"}
             else:
                 userid = (parse_token['data']['userid'])  # 查询用户id
-                print(userid)
                 sql="INSERT INTO user_avatar_image (`user_id`, `avatar_image_url`, `create_time`) VALUES ('%s', '%s', '%s')"%(userid,image_fullpath,create_time)
                 db_setting.my_db(sql)
                 return {"code": '200', "image_url": image_url + file_name, "message": "上传成功", "success": "true"}
