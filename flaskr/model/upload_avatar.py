@@ -21,32 +21,16 @@ def upload_avatar(app):
     @app.route('/upload_avatar', methods=['post'])#更新用户头像接口
     def upload_avatar():  # 用户头像上传
         avatar_image = request.files['file']
-        # print(avatar_image)
         if avatar_image and allowed_file(avatar_image.filename):
             # secure_filename方法会去掉文件名中的中文，获取文件的后缀名
             file_suffix = secure_filename(avatar_image.filename).split('.')[-1]#获取文件后缀，即后缀.jpg，.jpeg等
             first_name = str(uuid.uuid4())#uuid生成唯一的名称编码
             # # 将 uuid和后缀拼接为完整的文件名
             file_name = first_name + '.' + file_suffix
-
             avatar_image.save(os.path.join(upload_folder, file_name))#保存图片到指定目录
             token = request.headers['access_token']  # 获取header里的token
-            # print(token)
             parse_token = security.parse_token(token)  # 解析token
             image_fullpath=image_url + file_name#拼接完整路径用来保存数据库中
-            all_image_fullpath=[]
-            dd=request.form.getlist('file')
-
-
-            # print(image_fullpath)
-            # print(all_image_fullpath)
-            # all_image_fullpath.append(image_fullpath)
-            # for i in all_image_fullpath:
-            # print(all_image_fullpath)
-            print(dd)
-            # all_image_fullpath=request.form.getlist('file')
-            # all_image_fullpath=[]
-            # all_image_fullpath.append(image_fullpath)
             create_time=datetime.utcnow()
             if (parse_token == 1):
                 return {"code": 1, "message": "token已过期", "success": "false"}
