@@ -1,3 +1,6 @@
+import json
+import random
+
 from flask import Flask,request,Response,render_template
 from werkzeug.utils import secure_filename
 import os
@@ -29,18 +32,13 @@ def upload_article_img(app):
         elif (parse_token == 3):
             return {"code": 3, "message": "非法的token", "success": "false"}
         else:
-            # avatar_image = request.files['file']
             all_avatar_image=request.files.getlist('file')
-            # print(all_avatar_image)
-            # print(avatar_image)
-            # count = 0
-            # for i in all_avatar_image:
-            #     print(i)
+            article_id = request.form['article_id']
+            # article_id = request.json.get('article_id')
             all_image_fullpath = []
+            # print("这是"+article_id)
             for avatar_image in all_avatar_image:
 
-                # count+=1
-                # print(avatar_image)
                 if avatar_image and allowed_file(avatar_image.filename):
                     # secure_filename方法会去掉文件名中的中文，获取文件的后缀名
                     file_suffix = secure_filename(avatar_image.filename).split('.')[-1]#获取文件后缀，即后缀.jpg，.jpeg等
@@ -54,14 +52,14 @@ def upload_article_img(app):
 
                     image_fullpath=image_url + file_name
                     create_time=datetime.utcnow()
-                    userid = (parse_token['data']['userid'])  # 查询用户id
-                    sql="INSERT INTO user_avatar_image (`user_id`, `avatar_image_url`, `create_time`) VALUES ('%s', '%s', '%s')"%(userid,image_fullpath,create_time)
-                    db_setting.my_db(sql)
+
                     all_image_fullpath.append(image_fullpath)
                 else:
                     return {"code": 500, "message": "格式错误，仅支持jpg、png、jpeg格式文件","success":"false"}
+            sql = "UPDATE `article` SET  `article_img` = '%s'  WHERE `id` = '%s'" % (json.dumps((all_image_fullpath)), article_id)#将list转换为json插入数据库中
+            db_setting.my_db(sql)
+            # print(all_image_fullpath)
             return {"code": '200', "image_url": all_image_fullpath, "message": "上传成功", "success": "true"}
-            # print(count)
 
 
 
