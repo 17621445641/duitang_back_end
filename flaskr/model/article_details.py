@@ -8,6 +8,7 @@ def article_details(app):
     @app.route('/article_details', methods=['get'])
     def article_details():
         article_id=request.values.get('article_id')
+        user_id = request.values.get('user_id')
         sql="SELECT id,article_title,author_id,article_content,create_time,article_img FROM article where id='%s' "% (
             article_id)
         tinydict={'article_id': '', 'article_title': '', 'author_id': '', 'article_content': '', 'create_time': '', 'article_img': '','click_count':''}
@@ -15,7 +16,7 @@ def article_details(app):
         tinydict3 = {"click_status": ''}
         sql2="select count(*)as click_count from article_click where article_id='%s' and click_status=1"%(article_id)
         #查询文章点赞数量
-        sql3="select click_status from article_click where article_id='%s' and user_id=1 and click_status=1"%(article_id)
+        sql3="select click_status from article_click where article_id='%s' and user_id='%s' and click_status=1"%(article_id,user_id)
         #查询用户是否点赞该文章
         resp = []
         resp2=[]
