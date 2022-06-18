@@ -102,3 +102,21 @@ def follow_fans(app):
             fans_list = list_method.list_method(sql, dict)
             return {"code": 200, "message": "ok", "data": fans_list, "success": "true"}
             # return Response(json.dumps(fans_list, ensure_ascii=False), mimetype='application/json')
+
+    @app.route('/is_follow', methods=['get'])#查询用户是否已关注
+    def is_follow():
+        token = request.headers['access_token']  # 获取header里的token
+        parse_token = security.parse_token(token)  # 解析token
+        if (parse_token == 1):
+            return {"code": 1, "message": "token已过期", "success": "false"}
+        elif (parse_token == 2):
+            return {"code": 2, "message": "token认证失败", "success": "false"}
+        elif (parse_token == 3):
+            return {"code": 3, "message": "非法的token", "success": "false"}
+        else:
+            userid = (parse_token['data']['userid'])  # 查询用户id
+            be_follow=request.values.get('be_follow')
+            sql="select follow_status from follow_history where follow_user_id='%s' and be_follow_user_id='%s' and follow_status=1"%(userid,be_follow)
+            dict={'follow_status':''}
+            list_method.list_method(sql,dict)
+            return {"code": 200, "message": "ok", "data": list_method.list_method(sql,dict), "success": "true"}

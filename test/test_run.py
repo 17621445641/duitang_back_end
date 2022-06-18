@@ -1,5 +1,5 @@
 from flask import Flask
-from flaskr.model import article_click, article_like, article_views, register_login, user_message
+from flaskr.model import article_click, article_collect, article_views, register_login, user_message
 from test import upload_images
 app=Flask(__name__)#创建app应用
 #调用其他文件下的
