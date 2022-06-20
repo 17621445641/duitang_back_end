@@ -23,7 +23,7 @@ def article_details(app):
         resp = []
         resp2=[]
         resp3=[]
-        article_list=list_method.list_method(sql,tinydict)
+        article_details=list_method.list_method(sql,tinydict)
         click_count=list_method.list_method(sql2,tinydict2)[0]
         click_status = list_method.list_method(sql3,tinydict3)[0]
         collect_status=list_method.list_method(sql4,tinydict4)[0]
@@ -35,7 +35,7 @@ def article_details(app):
         change_type_collect_status = json.dumps(collect_status)
         # print(type(change_type))
         resp.append(change_type_article_list)
-        last_list1 = splicing_list.splicing_list(article_list, resp)
+        last_list1 = splicing_list.splicing_list(article_details, resp)
         resp2.append(change_type_click_status)
         last_list2=splicing_list.splicing_list(last_list1, resp2)
         resp3.append(change_type_collect_status)
