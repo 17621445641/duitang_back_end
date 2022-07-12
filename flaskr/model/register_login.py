@@ -70,7 +70,7 @@ def auth(app):
             time_now = datetime.utcnow()
             code_time=db_setting.my_db(sql2)[0][2]#验证码创建时间
             update_code=db_setting.my_db(sql2)[0][1]#验证码\
-            if(check_code==update_code):
+            if(check_code==str(update_code)):
                 if(time_now>code_time+timedelta(minutes=5)):
                     return {"code": '0004', "message": "验证码已失效","success":"false"}
                 else:
