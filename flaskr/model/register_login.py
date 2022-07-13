@@ -1,4 +1,5 @@
 from flask import request
+from flask import jsonify
 from datetime import datetime,timedelta
 from flaskr.common_method import db_setting, security
 import random
@@ -45,14 +46,14 @@ def auth(app):
             else:
                 return {"code": '0002', "message": "两次密码输入不一致","success":"false"}
 
-    @app.route('/check_account', methods=['post'])
-    def check_account():  # 检查账户是否注册
+    @app.route('/send_code', methods=['post'])
+    def send_code():  # 检查账户是否注册，发送验证码
         account = request.json.get('account')
         sql = "SELECT id from user_account where account='%s' " % (account)  # 查询用户是否已注册
         if (len(db_setting.my_db(sql)) != 0):  # 判断用户是否已注册
             update_code = random.randint(100000, 999999)  # 随机生成6位模拟验证码校验
             create_time = datetime.utcnow()
-            sql2 = "INSERT INTO `update_code` (`user_id`, `update_code`, `create_time`) VALUES ('%s', '%s', '%s')" % (
+            sql2 = "INSERT INTO `update_code` (`user_id`, `update_code`, `create_time`,code_status) VALUES ('%s', '%s', '%s',0)" % (
             db_setting.my_db(sql)[0][0], update_code, create_time)
             db_setting.my_db(sql2)
             return {"code": '200', "update_code":update_code,"message": "验证码为：" + str(update_code) + ",有效期限五分钟","success":"true"}
@@ -66,17 +67,22 @@ def auth(app):
         sql = "SELECT id from user_account where account='%s' " % (account)  # 查询用户是否已注册
         if (len(db_setting.my_db(sql)) != 0):  # 判断用户是否已注册
             userid=db_setting.my_db(sql)[0][0]
-            sql2="SELECT * from update_code where user_id='%s' ORDER BY create_time DESC limit 1"% (userid)
+            sql2="select user_id,update_code,create_time from(SELECT * from update_code where user_id='%s' ORDER BY create_time DESC limit 1)as a where code_status=0"% (userid)
             time_now = datetime.utcnow()
-            code_time=db_setting.my_db(sql2)[0][2]#验证码创建时间
-            update_code=db_setting.my_db(sql2)[0][1]#验证码\
-            if(check_code==str(update_code)):
-                if(time_now>code_time+timedelta(minutes=5)):
-                    return {"code": '0004', "message": "验证码已失效","success":"false"}
+            if (db_setting.my_db(sql2)):
+                update_code = db_setting.my_db(sql2)[0][1]  # 验证码\
+                code_time=db_setting.my_db(sql2)[0][2]#验证码创建时间
+                if(check_code==str(update_code)):
+                    if(time_now>code_time+timedelta(minutes=5)):
+                        return {"code": '0004', "message": "验证码已失效","success":"false"}
+                    else:
+                        sql3="UPDATE `update_code` SET  `code_status` = 1 WHERE `user_id` ='%s'  AND `update_code` = '%s'; "%(userid,update_code)
+                        db_setting.my_db(sql3)
+                        return {"code": '200', "message": "验证码验证成功","success":"true"}
                 else:
-                    return {"code": '200', "message": "验证码验证成功","success":"true"}
+                    return {"code": '0003', "message": "验证码有误","success":"false"}
             else:
-                return {"code": '0003', "message": "验证码有误","success":"false"}
+                return {"code": '0003', "message": "验证码有误", "success": "false"}
         else:
             return {"code": '0001', "message": "账户未注册","success":"false"}
 

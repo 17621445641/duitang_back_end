@@ -1,5 +1,5 @@
 from flask import Flask
-from flaskr.model import article_click, article_collect, article_views, register_login, user_message,upload_avatar,follow_fans,article_img,article_add,article_list,article_details
+from flaskr.model import article_click, article_collect, article_views, register_login, user_message,upload_avatar,follow_fans,article_img,article_add,article_list,article_details,article_comment
 from flask_cors import CORS
 
 app=Flask(__name__)#创建app应用
@@ -15,6 +15,7 @@ article_img.upload_article_img(app)
 article_add.article_add(app)
 article_list.article_list(app)
 article_details.article_details(app)
+article_comment.article_comment(app)
 if __name__=='__main__':
     CORS(app, supports_credentials=True)#跨域支持
     app.run(debug=True, host='127.0.0.1', port=8998 )

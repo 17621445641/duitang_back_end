@@ -5,7 +5,7 @@ from datetime import datetime
 from flaskr.common_method import db_setting, security,list_method,splicing_list
 import requests
 def article_add(app):
-    @app.route('/dynamic_add', methods=['post'])
+    @app.route('/dynamic_add', methods=['post'])#发布动态
     def dynamic_add():
         token = request.headers['access_token']  # 获取header里的token
         parse_token = security.parse_token(token)  # 解析token
