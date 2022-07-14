@@ -11,7 +11,7 @@ def list_method(sql,dict):
             for j in i:
                 if(index<len(dict)):#根据传入的字典长度来赋值
                     if (isinstance(j, datetime)):#判断日期类型则进行转换
-                        dict[key_list[index]] = j.strftime('%Y-%m-%d %H-%M-%S')
+                        dict[key_list[index]] = j.strftime('%Y-%m-%d %H:%M:%S')
                         index = index + 1
                     elif(isinstance(j,date)):
                         dict[key_list[index]] = j.strftime('%Y-%m-%d')
