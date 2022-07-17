@@ -39,7 +39,7 @@ def article_details(app):
         resp2.append(change_type_click_status)
         last_list2=splicing_list.splicing_list(last_list1, resp2)
         resp3.append(change_type_collect_status)
-        print(resp3)
+        # print(resp3)
         last_list3=splicing_list.splicing_list(last_list2, resp3)
         # print(resp)
         return {"code": 200, "message": "ok", "data": last_list3 ,"success": "true"}

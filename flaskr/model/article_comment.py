@@ -63,7 +63,7 @@ def article_comment(app):
             reply_user=request.json.get('reply_user')
             create_time = datetime.utcnow()
             global level
-            if (reply_id == ""):
+            if (reply_id == None):
                 level=0
             else:
                 level=1
