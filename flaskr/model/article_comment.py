@@ -7,9 +7,9 @@ def article_comment(app):
     def get_comment():  # 查询文章评论
         article_id = request.values.get('article_id')
         # 查询一级评论
-        sql="select * from article_comment where article_id='%s' and level=0 ORDER BY create_time DESC"%(article_id)
+        sql="select comment_id,article_id,e.user_id,name,avatar_image_url,reply_id,reply_user,comment,level,create_time from(select * from article_comment where article_id='%s' and level=0 )as e  LEFT JOIN (select name,avatar_image_url,user_id from user_message as c INNER JOIN(select user_id,avatar_image_url from user_avatar_image as a INNER JOIN (select MAX(create_time) as create_time from user_avatar_image GROUP BY user_id)as b on a.create_time=b.create_time)as d on c.id=d.user_id )as f on e.user_id=f.user_id ORDER BY create_time DESC"%(article_id)
         if(db_setting.my_db(sql)):
-            tinydict = {'comment_id': '', 'article_id': '', 'user_id': '', 'reply_id': '', 'reply_user': '',
+            tinydict = {'comment_id': '', 'article_id': '', 'user_id': '','user_name':'', 'avatar_image_url':'','reply_id': '', 'reply_user': '',
                     'comment': '', 'level': '','create_time':''}
 
             comment_list1=list_method.list_method(sql,tinydict)
@@ -19,10 +19,10 @@ def article_comment(app):
         for i in comment_list1:
             comment_id = i['comment_id']
             # 查询二级评论
-            sql2 = "select * from article_comment where article_id='%s' and level=1 and reply_id='%s' ORDER BY create_time DESC" % (
+            sql2 = "select comment_id,article_id,e.user_id,name,avatar_image_url,reply_id,reply_user,comment,level,create_time from(select * from article_comment where article_id='%s' and level=1 and reply_id='%s')as e  LEFT JOIN (select name,avatar_image_url,user_id from user_message as c INNER JOIN(select user_id,avatar_image_url from user_avatar_image as a INNER JOIN (select MAX(create_time) as create_time from user_avatar_image GROUP BY user_id)as b on a.create_time=b.create_time)as d on c.id=d.user_id )as f on e.user_id=f.user_id ORDER BY create_time DESC" % (
             article_id,comment_id)
-            tinydict2 = {'comment_id': '', 'article_id': '', 'user_id': '', 'reply_id': '', 'reply_user': '',
-                         'comment': '', 'level': '', 'create_time': ''}
+            tinydict2 = {'comment_id': '', 'article_id': '', 'user_id': '','user_name':'', 'avatar_image_url':'','reply_id': '', 'reply_user': '',
+                    'comment': '', 'level': '','create_time':''}
             if(db_setting.my_db(sql2)):
                 comment_list2 = list_method.list_method(sql2, tinydict2)
                 i['data'] =comment_list2
