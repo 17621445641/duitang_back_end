@@ -4,8 +4,8 @@ from flask import request,Response
 from datetime import datetime
 from flaskr.common_method import db_setting, security,list_method,splicing_list
 import requests
-def article_add(app):
-    @app.route('/dynamic_add', methods=['post'])#发布动态
+def article_publish(app):
+    @app.route('/dynamic_publish', methods=['post'])#发布动态
     def dynamic_add():
         token = request.headers['access_token']  # 获取header里的token
         parse_token = security.parse_token(token)  # 解析token
@@ -16,6 +16,7 @@ def article_add(app):
         elif (parse_token == 3):
             return {"code": 3, "message": "非法的token", "success": "false"}
         else:
+
             article_type = request.json.get('article_type')
             article_content = request.json.get('article_content')
             author_id = (parse_token['data']['userid'])
@@ -33,7 +34,7 @@ def article_add(app):
                 else:
                     return {"code": 500, "message": "view_status只能为0或1", "success": "false"}
             elif(article_type==2):
-                return {"code": 200, "message": "文章发布成功", "success": "true"}
+                return {"code": 200, "message": "动态发布成功", "success": "true"}
             else:
                 return {"code": 500, "message": "article_type只能为1或2", "success": "false"}
 

@@ -11,14 +11,14 @@ def article_details(app):
         user_id = request.values.get('user_id')
         sql="SELECT id,article_title,author_id,article_content,create_time,article_img FROM article where id='%s' "% (
             article_id)
-        tinydict={'article_id': '', 'article_title': '', 'author_id': '', 'article_content': '', 'create_time': '', 'article_img': '','click_count':''}
-        tinydict2 = {"click_count": ''}
-        tinydict3 = {"click_status": ''}
+        tinydict={'article_id': '', 'article_title': '', 'author_id': '', 'article_content': '', 'create_time': '', 'article_img': ''}
+        tinydict2 = {"like_count": ''}
+        tinydict3 = {"like_status": ''}
         tinydict4 = {"collect_status": ''}
         sql2="select count(*)as click_count from article_click where article_id='%s' and click_status=1"%(article_id)
-        #查询文章点赞数量
+        #查询文章喜欢数量
         sql3="select click_status from article_click where article_id='%s' and user_id='%s' and click_status=1"%(article_id,user_id)
-        #查询用户是否点赞该文章
+        #查询用户是否喜欢该文章
         sql4="select collect_status from article_collect where article_id='%s' and user_id='%s' and collect_status=1"%(article_id,user_id)
         resp = []
         resp2=[]

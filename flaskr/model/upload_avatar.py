@@ -45,8 +45,6 @@ def upload_avatar(app):
                 return {"code": '200', "image_url": image_url + file_name, "message": "上传成功", "success": "true"}
         else:
             return {"code": 500, "message": "格式错误，仅支持jpg、png、jpeg格式文件","success":"false"}
-
-
 # from flask import Flask, request, Response, render_template
 # from werkzeug.utils import secure_filename
 # import os

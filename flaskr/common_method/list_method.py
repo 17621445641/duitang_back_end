@@ -2,7 +2,6 @@ from flaskr.common_method import db_setting
 from datetime import datetime,date
 def list_method(sql,dict):
     sql_data= db_setting.my_db(sql)
-    # print(len(sql_data))
     final_list = []
     if(len(sql_data)!=0):
         for i in sql_data:

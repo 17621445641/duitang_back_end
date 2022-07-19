@@ -23,14 +23,9 @@ def article_list(app):
         # sql2="SELECT click_status from article_click where user_id='%s'"%(user_id)
         # sql2="select id,article_title,author_id,article_content,create_time,article_img from article where view_status=1 and article_content like '%\%s%'  order by create_time DESC"%(select_content)
         dict = { 'article_id': '', 'article_title': '', 'author_id': '',"name":'',"avatar_image_url":'', 'article_content': '',
-                 'article_create_time': '', "article_imglist":'','click_count':'','click_status':''}
+                 'article_create_time': '', "article_imglist":'','like_count':'','like_status':''}
         # dict2={'click_status':''}
         article_list=list_method.list_method(sql,dict)
-        # resp = []
-        # click_status_list=list_method.list_method(sql2,dict2)[0]
-        # change_click_status_list=json.dumps(click_status_list)
-        # resp.append(change_click_status_list)
-        # last_list=splicing_list.splicing_list(article_list,resp)
         return {"code": 200, "message": "ok","data":article_list,"success":"true"}
 
     #热门搜索词
