@@ -1,5 +1,5 @@
 from flask import Flask
-from flaskr.model import article_like, article_collect, article_views, register_login, user_message,upload_avatar,follow_fans,article_img,article_publish,article_list,article_details,article_comment
+from flaskr.model import article_like, article_collect, article_views, register_login, user_message,upload_avatar,follow_fans,article_publish,article_list,article_details,article_comment
 from flask_cors import CORS
 
 app=Flask(__name__)#创建app应用
@@ -11,7 +11,6 @@ article_collect.article_collect(app)#文章喜欢和取消喜欢和喜欢列表
 article_views.article_views(app)#文章浏览记录新增，获取文章浏览量，用户浏览记录
 upload_avatar.upload_avatar(app)#用户头像上传
 follow_fans.follow_fans(app)#用户关注/取消关注，查询用户关注和粉丝列表
-article_img.upload_article_img(app)
 article_publish.article_publish(app)
 article_list.article_list(app)
 article_details.article_details(app)

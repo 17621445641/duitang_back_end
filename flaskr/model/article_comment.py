@@ -36,11 +36,10 @@ def article_comment(app):
             comment_list1 = splicing_list.splicing_list(comment_list1, resp1_click_count)
 
             # 查询用户是否点赞该评论
-            sql3_comment_click_status = "select click_status from comment_click where comment_id='%s' and user_id='%s' and click_status=1" % (
+            sql3_comment_click_status = "select click_status from comment_click where comment_id='%s' and user_id='%s' " % (
                 comment_id, user_id)
-            # print('dsfsd', tinydict3_click_status)
-            click_status = list_method.list_method(sql3_comment_click_status, tinydict3_click_status)[0]
 
+            click_status = list_method.list_method(sql3_comment_click_status, tinydict3_click_status)[0]
             # print("tinydict3",tinydict3_click_status)
             change_type_click_status = json.dumps(click_status)
             resp1_click_stauts.append(change_type_click_status)
@@ -72,9 +71,9 @@ def article_comment(app):
                 i['data'] = splicing_list.splicing_list(i['data'], resp2_click_count)
 
                 # 查询用户是否点赞该评论
-                sql3_comment_click_status = "select click_status from comment_click where comment_id='%s' and user_id='%s' and click_status=1" % (
+                sql3_comment_click_status = "select click_status from comment_click where comment_id='%s' and user_id='%s'" % (
                     comment_id, user_id)
-                # print(i['data'])
+
                 click_status = list_method.list_method(sql3_comment_click_status, tinydict3_click_status)[0]
                 change_type_click_status = json.dumps(click_status)
                 resp2_click_stauts.append(change_type_click_status)

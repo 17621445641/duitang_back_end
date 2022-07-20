@@ -15,25 +15,21 @@ def article_details(app):
         tinydict2 = {"like_count": ''}
         tinydict3 = {"like_status": ''}
         tinydict4 = {"collect_status": ''}
-        sql2="select count(*)as click_count from article_click where article_id='%s' and click_status=1"%(article_id)
-        #查询文章喜欢数量
+        # 查询文章喜欢数量
+        sql2="select count(*)as like_count from article_click where article_id='%s' and click_status=1"%(article_id)
+        # 查询用户是否喜欢该文章
         sql3="select click_status from article_click where article_id='%s' and user_id='%s' and click_status=1"%(article_id,user_id)
-        #查询用户是否喜欢该文章
         sql4="select collect_status from article_collect where article_id='%s' and user_id='%s' and collect_status=1"%(article_id,user_id)
         resp = []
         resp2=[]
         resp3=[]
         article_details=list_method.list_method(sql,tinydict)
-        click_count=list_method.list_method(sql2,tinydict2)[0]
+        like_count=list_method.list_method(sql2,tinydict2)[0]
         click_status = list_method.list_method(sql3,tinydict3)[0]
         collect_status=list_method.list_method(sql4,tinydict4)[0]
-        # print(click_status)
-        # print(click_status)
-        # print(b[0].click_count)
-        change_type_article_list =json.dumps(click_count)
+        change_type_article_list =json.dumps(like_count)
         change_type_click_status = json.dumps(click_status)
         change_type_collect_status = json.dumps(collect_status)
-        # print(type(change_type))
         resp.append(change_type_article_list)
         last_list1 = splicing_list.splicing_list(article_details, resp)
         resp2.append(change_type_click_status)
