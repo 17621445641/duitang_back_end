@@ -83,11 +83,30 @@ def article_list(app):
                 like_status_resp.append(json.dumps(change_like_status_list))
                 last_status_list= splicing_list.splicing_list(last_count_list, like_status_resp)
 
-                sql4="select collect_status from article_collect where article_id='%s' and user_id='%s' and collect_status=1"%(article_id,user_id)
+                #查询用户是否收藏该文章
+                sql4="select collect_status from article_collect where article_id='%s' and user_id='%s'"%(article_id,user_id)
                 change_collect_status_list = list_method.list_method(sql4, collect_status_list)[0]
                 collect_status_resp.append(json.dumps(change_collect_status_list))
                 last_list = splicing_list.splicing_list(last_status_list, collect_status_resp)
             return {"code": 200, "message": "ok","data":last_list,"success":"true"}
 
+    # 更改动态是否可见
+    @app.route('/update_view_status', methods=['post'])
+    def update_view_status():
+        token = request.headers['access_token']  # 获取header里的token
+        parse_token = security.parse_token(token)  # 解析token
+        if (parse_token == 1):
+            return {"code": 1, "message": "token已过期", "success": "false"}
+        elif (parse_token == 2):
+            return {"code": 2, "message": "token认证失败", "success": "false"}
+        elif (parse_token == 3):
+            return {"code": 3, "message": "非法的token", "success": "false"}
+        else:
+            article_id = request.json.get('article_id')  # 文章id
+            view_status=request.json.get('view_status')#1为可见，0为私密不可见
+            update_time=datetime.utcnow()
+            sql="UPDATE `article` SET `view_status` = '%s',`update_time` = '%s' WHERE `id` = '%s';"%(view_status,update_time,article_id)
+            db_setting.my_db(sql)
+            return {"code": 200, "message": '更新动态状态成功', "success": "true"}
 
 
