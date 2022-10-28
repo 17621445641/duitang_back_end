@@ -84,33 +84,37 @@ def article_collect(app):
             collect_status_resp = []
             collect_status_list = {'collect_status': '', }
             for num in collect_list:
-                # 查询用户头像，用户名信息
-                sql1 = "select name,avatar_image_url from user_message as c INNER JOIN(select user_id,avatar_image_url from user_avatar_image as a INNER JOIN (select MAX(create_time) as create_time from user_avatar_image GROUP BY user_id)as b on a.create_time=b.create_time)as d on c.id=d.user_id and user_id='%s'" % (
-                    num['author_id'])
-                user_message_list=json.dumps(list_method.list_method(sql1,user_message)[0])
-                resp.append(user_message_list)
-                article_list=splicing_list.splicing_list(collect_list, resp)
+                if (num['author_id'] == ""):
+                    last_list = []
+                    break
+                else:
+                    # 查询用户头像，用户名信息
+                    sql1 = "select name,avatar_image_url from user_message as c INNER JOIN(select user_id,avatar_image_url from user_avatar_image as a INNER JOIN (select MAX(create_time) as create_time from user_avatar_image GROUP BY user_id)as b on a.create_time=b.create_time)as d on c.id=d.user_id and user_id='%s'" % (
+                        num['author_id'])
+                    user_message_list=json.dumps(list_method.list_method(sql1,user_message)[0])
+                    resp.append(user_message_list)
+                    article_list=splicing_list.splicing_list(collect_list, resp)
 
-                # 查询文章喜欢数量
-                sql2 = "select count(*)as like_count from article_click where article_id='%s' and click_status=1" % (
-                    num['article_id'])
-                change_like_count_list = list_method.list_method(sql2, like_count_list)[0]
-                like_count_resp.append(json.dumps(change_like_count_list))
-                last_count_list = splicing_list.splicing_list(article_list, like_count_resp)
+                    # 查询文章喜欢数量
+                    sql2 = "select count(*)as like_count from article_click where article_id='%s' and click_status=1" % (
+                        num['article_id'])
+                    change_like_count_list = list_method.list_method(sql2, like_count_list)[0]
+                    like_count_resp.append(json.dumps(change_like_count_list))
+                    last_count_list = splicing_list.splicing_list(article_list, like_count_resp)
 
-                # 查询用户是否喜欢该文章
-                sql3 = "select click_status as like_status from article_click where article_id='%s' and user_id='%s'" % (
+                    # 查询用户是否喜欢该文章
+                    sql3 = "select click_status as like_status from article_click where article_id='%s' and user_id='%s'" % (
+                        num['article_id'], userid)
+                    change_like_status_list = list_method.list_method(sql3, like_status_list)[0]
+                    like_status_resp.append(json.dumps(change_like_status_list))
+                    last_status_list = splicing_list.splicing_list(last_count_list, like_status_resp)
+
+                    # 查询用户是否收藏该文章
+                    sql4 = "select collect_status from article_collect where article_id='%s' and user_id='%s'" % (
                     num['article_id'], userid)
-                change_like_status_list = list_method.list_method(sql3, like_status_list)[0]
-                like_status_resp.append(json.dumps(change_like_status_list))
-                last_status_list = splicing_list.splicing_list(last_count_list, like_status_resp)
-
-                # 查询用户是否收藏该文章
-                sql4 = "select collect_status from article_collect where article_id='%s' and user_id='%s'" % (
-                num['article_id'], userid)
-                change_collect_status_list = list_method.list_method(sql4, collect_status_list)[0]
-                collect_status_resp.append(json.dumps(change_collect_status_list))
-                last_list = splicing_list.splicing_list(last_status_list, collect_status_resp)
+                    change_collect_status_list = list_method.list_method(sql4, collect_status_list)[0]
+                    collect_status_resp.append(json.dumps(change_collect_status_list))
+                    last_list = splicing_list.splicing_list(last_status_list, collect_status_resp)
 
             # last_list = splicing_list.splicing_list(collect_list, resp)
             return {"code": 200, "message": "ok", "data": last_list, "success": "true"}

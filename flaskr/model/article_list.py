@@ -52,14 +52,9 @@ def article_list(app):
             user_id = (parse_token['data']['userid'])  # 查询用户id
             # 查询发布过的动态
             sql = "select id,article_title,author_id,article_content,view_status,article_img,article_type,create_time from article where author_id='%s' order by create_time desc" % (user_id)
-
-
-            if(db_setting.my_db(sql)):
-                list1 = {'article_id': '', 'article_title': '', 'author_id': '', 'article_content': '', 'view_status': '', 'article_img': '','article_type': '',
-                            'create_time': ''}
-                dynamic_list=list_method.list_method(sql,list1)
-            else:
-                dynamic_list=[]
+            list1 = {'article_id': '', 'article_title': '', 'author_id': '', 'article_content': '', 'view_status': '', 'article_img': '','article_type': '',
+                        'create_time': ''}
+            dynamic_list=list_method.list_method(sql,list1)
 
             like_count_list={'like_count': '',}
             like_status_list = {'like_status': '', }
@@ -69,26 +64,88 @@ def article_list(app):
             collect_status_list = {'collect_status': '', }
             for i in dynamic_list:
                 article_id=i['article_id']
+                if(article_id==""):
+                    last_list=[]
+                    break
+                else:
+                    # 查询文章喜欢数量
+                    sql2 = "select count(*)as like_count from article_click where article_id='%s' and click_status=1" % (
+                        article_id)
+                    change_like_count_list=list_method.list_method(sql2,like_count_list)[0]
+                    like_count_resp.append(json.dumps(change_like_count_list))
+                    last_count_list=splicing_list.splicing_list(dynamic_list,like_count_resp)
+
+                    # 查询用户是否喜欢该文章
+                    sql3 = "select click_status as like_status from article_click where article_id='%s' and user_id='%s'" % (
+                    article_id, user_id)
+                    change_like_status_list = list_method.list_method(sql3, like_status_list)[0]
+                    like_status_resp.append(json.dumps(change_like_status_list))
+                    last_status_list= splicing_list.splicing_list(last_count_list, like_status_resp)
+
+                    #查询用户是否收藏该文章
+                    sql4="select collect_status from article_collect where article_id='%s' and user_id='%s'"%(article_id,user_id)
+                    change_collect_status_list = list_method.list_method(sql4, collect_status_list)[0]
+                    collect_status_resp.append(json.dumps(change_collect_status_list))
+                    last_list = splicing_list.splicing_list(last_status_list, collect_status_resp)
+            return {"code": 200, "message": "ok","data":last_list,"success":"true"}
+
+    # 查询作者的动态列表
+    @app.route('/author_dynamic', methods=['get'])
+    def author_dynamic_list():  # 查询作者发布的动态列表
+        # token = request.headers['access_token']  # 获取header里的token
+        # parse_token = security.parse_token(token)  # 解析token
+        # if (parse_token == 1):
+        #     return {"code": 1, "message": "token已过期", "success": "false"}
+        # elif (parse_token == 2):
+        #     return {"code": 2, "message": "token认证失败", "success": "false"}
+        # elif (parse_token == 3):
+        #     return {"code": 3, "message": "非法的token", "success": "false"}
+        # else:
+            # user_id = (parse_token['data']['userid'])  # 查询用户id
+        # 查询发布过的动态
+        author_id = request.values.get('author_id')#作者id
+        user_id = request.values.get('user_id')#用户id，非必填
+        sql = "select id,article_title,author_id,article_content,view_status,article_img,article_type,create_time from article where author_id='%s' and view_status=1 order by create_time desc" % (
+            author_id)
+        list1 = {'article_id': '', 'article_title': '', 'author_id': '', 'article_content': '',
+                 'view_status': '', 'article_img': '', 'article_type': '',
+                 'create_time': ''}
+        dynamic_list = list_method.list_method(sql, list1)
+
+        like_count_list = {'like_count': '', }
+        like_status_list = {'like_status': '', }
+        like_count_resp = []
+        like_status_resp = []
+        collect_status_resp = []
+        collect_status_list = {'collect_status': '', }
+        for i in dynamic_list:
+            article_id = i['article_id']
+            if (article_id == ""):
+                last_list = []
+                break
+            else:
                 # 查询文章喜欢数量
                 sql2 = "select count(*)as like_count from article_click where article_id='%s' and click_status=1" % (
                     article_id)
-                change_like_count_list=list_method.list_method(sql2,like_count_list)[0]
+                change_like_count_list = list_method.list_method(sql2, like_count_list)[0]
                 like_count_resp.append(json.dumps(change_like_count_list))
-                last_count_list=splicing_list.splicing_list(dynamic_list,like_count_resp)
+                last_count_list = splicing_list.splicing_list(dynamic_list, like_count_resp)
 
                 # 查询用户是否喜欢该文章
                 sql3 = "select click_status as like_status from article_click where article_id='%s' and user_id='%s'" % (
-                article_id, user_id)
+                    article_id, user_id)
+                print(sql3)
                 change_like_status_list = list_method.list_method(sql3, like_status_list)[0]
                 like_status_resp.append(json.dumps(change_like_status_list))
-                last_status_list= splicing_list.splicing_list(last_count_list, like_status_resp)
+                last_status_list = splicing_list.splicing_list(last_count_list, like_status_resp)
 
-                #查询用户是否收藏该文章
-                sql4="select collect_status from article_collect where article_id='%s' and user_id='%s'"%(article_id,user_id)
+                # 查询用户是否收藏该文章
+                sql4 = "select collect_status from article_collect where article_id='%s' and user_id='%s'" % (
+                article_id, user_id)
                 change_collect_status_list = list_method.list_method(sql4, collect_status_list)[0]
                 collect_status_resp.append(json.dumps(change_collect_status_list))
                 last_list = splicing_list.splicing_list(last_status_list, collect_status_resp)
-            return {"code": 200, "message": "ok","data":last_list,"success":"true"}
+        return {"code": 200, "message": "ok", "data": last_list, "success": "true"}
 
     # 更改动态是否可见
     @app.route('/update_view_status', methods=['post'])
