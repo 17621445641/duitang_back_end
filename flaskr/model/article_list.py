@@ -19,7 +19,7 @@ def article_list(app):
             db_setting.my_db(sql2)
 
         #查询文章列表信息
-        sql="select * from (SELECT id,article_title,author_id,name,avatar_image_url,article_content,create_time,article_img,like_count from (select article_id,count(*) as like_count from article_click where click_status=1 GROUP BY article_id) as g right JOIN(select * from (select * from article where view_status=1) as e INNER JOIN(select user_id,name,avatar_image_url from user_message as c INNER JOIN(select user_id,avatar_image_url from user_avatar_image as a INNER JOIN (select MAX(create_time) as create_time from user_avatar_image GROUP BY user_id)as b on a.create_time=b.create_time)as d on c.id=d.user_id )as f on e.author_id=f.user_id and (f.name like '%%%s%%' or e.article_content like'%%%s%%' ) )as h on g.article_id=h.id )as j LEFT JOIN (SELECT click_status,article_id from article_click where user_id='%s')as k on j.id=k.article_id ORDER BY create_time DESC"%(search_word,search_word,user_id)
+        sql="select * from (SELECT id,article_title,author_id,name,avatar_image_url,article_content,create_time,article_img,like_count from (select article_id,count(*) as like_count from article_click where click_status=1 GROUP BY article_id) as g right JOIN(select * from (select * from article where view_status=1 and is_delete!=1) as e INNER JOIN(select user_id,name,avatar_image_url from user_message as c INNER JOIN(select user_id,avatar_image_url from user_avatar_image as a INNER JOIN (select MAX(create_time) as create_time from user_avatar_image GROUP BY user_id)as b on a.create_time=b.create_time)as d on c.id=d.user_id )as f on e.author_id=f.user_id and (f.name like '%%%s%%' or e.article_content like'%%%s%%' ) )as h on g.article_id=h.id )as j LEFT JOIN (SELECT click_status,article_id from article_click where user_id='%s')as k on j.id=k.article_id ORDER BY create_time DESC"%(search_word,search_word,user_id)
         # sql2="SELECT click_status from article_click where user_id='%s'"%(user_id)
         # sql2="select id,article_title,author_id,article_content,create_time,article_img from article where view_status=1 and article_content like '%\%s%'  order by create_time DESC"%(select_content)
         dict = { 'article_id': '', 'article_title': '', 'author_id': '',"name":'',"avatar_image_url":'', 'article_content': '',
@@ -51,7 +51,7 @@ def article_list(app):
         else:
             user_id = (parse_token['data']['userid'])  # 查询用户id
             # 查询发布过的动态
-            sql = "select id,article_title,author_id,article_content,view_status,article_img,article_type,create_time from article where author_id='%s' order by create_time desc" % (user_id)
+            sql = "select id,article_title,author_id,article_content,view_status,article_img,article_type,create_time from article where author_id='%s' and is_delete!=1 order by create_time desc" % (user_id)
             list1 = {'article_id': '', 'article_title': '', 'author_id': '', 'article_content': '', 'view_status': '', 'article_img': '','article_type': '',
                         'create_time': ''}
             dynamic_list=list_method.list_method(sql,list1)
@@ -105,7 +105,7 @@ def article_list(app):
         # 查询发布过的动态
         author_id = request.values.get('author_id')#作者id
         user_id = request.values.get('user_id')#用户id，非必填
-        sql = "select id,article_title,author_id,article_content,view_status,article_img,article_type,create_time from article where author_id='%s' and view_status=1 order by create_time desc" % (
+        sql = "select id,article_title,author_id,article_content,view_status,article_img,article_type,create_time from article where author_id='%s' and is_delete!=1 and view_status=1 order by create_time desc" % (
             author_id)
         list1 = {'article_id': '', 'article_title': '', 'author_id': '', 'article_content': '',
                  'view_status': '', 'article_img': '', 'article_type': '',

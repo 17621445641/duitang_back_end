@@ -20,7 +20,7 @@ def article_collect(app):
             article_id = request.json.get('article_id')  # 文章id
             status = request.json.get('status')  # 根据status执行收藏或者不收藏
             if (article_id):  # 判断是否传了article_id字段
-                sql = "select id from article where id='%s'" % (article_id)
+                sql = "select id from article where id='%s' and is_delete!=1" % (article_id)
                 if (db_setting.my_db(sql)):  # 查询是否含有此文章id
                     sql2 = "select collect_status from article_collect where user_id='%s' and article_id='%s'" % (userid,article_id)#查询数据库表中是否有记录
                     if(status==0): #判断执行取消收藏
@@ -68,7 +68,7 @@ def article_collect(app):
             return {"code": 3, "message": "非法的token", "success": "false"}
         else:
             userid = (parse_token['data']['userid'])  # 查询用户id
-            sql="select  a.user_id,b.id,b.article_title,author_id,article_content,view_status,article_img,b.create_time as article_createtime,a.update_time as collect_time from article_collect as a INNER JOIN article as b on a.article_id=b.id and a.user_id='%s' and a.collect_status=1 and article_id not in(select article_id from article_collect as a INNER JOIN article as b on a.article_id=b.id and user_id!=author_id and view_status=0 and user_id='%s')ORDER BY collect_time DESC"%(userid,userid)
+            sql="select  a.user_id,b.id,b.article_title,author_id,article_content,view_status,article_img,b.create_time as article_createtime,a.update_time as collect_time from article_collect as a INNER JOIN article as b on a.article_id=b.id and a.user_id='%s' and a.collect_status=1 and is_delete!=1 and article_id not in(select article_id from article_collect as a INNER JOIN article as b on a.article_id=b.id and user_id!=author_id and view_status=0 and user_id='%s')ORDER BY collect_time DESC"%(userid,userid)
             dict = {'user_id': '', 'article_id': '', 'article_title': '', 'author_id': '', 'article_content': '',
                     'view_status': '', 'article_img':'','article_create_time': '','collect_time':''}
             collect_list= list_method.list_method(sql, dict)

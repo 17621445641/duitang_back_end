@@ -25,6 +25,26 @@ def upload_avatar(app):
             sql="INSERT INTO user_avatar_image (`user_id`, `avatar_image_url`, `create_time`) VALUES ('%s', '%s', '%s')"%(userid,img_fullpath,create_time)
             db_setting.my_db(sql)
             return {"code": '200', "image_url": img_fullpath, "message": "上传成功", "success": "true"}
+
+    @app.route('/upload_background', methods=['post'])  # 用户背景图片上传接口
+    def upload_background():  # 用户背景图上传
+        background_image = request.files['file']
+        img_fullpath = img_save.img_save(background_image, 3)  # 1为保存背景图片
+        token = request.headers['access_token']  # 获取header里的token
+        parse_token = security.parse_token(token)  # 解析token
+        create_time = datetime.utcnow()
+        if (parse_token == 1):
+            return {"code": 1, "message": "token已过期", "success": "false"}
+        elif (parse_token == 2):
+            return {"code": 2, "message": "token认证失败", "success": "false"}
+        elif (parse_token == 3):
+            return {"code": 3, "message": "非法的token", "success": "false"}
+        else:
+            userid = (parse_token['data']['userid'])  # 查询用户id
+            sql = "INSERT INTO user_backgd_image (`user_id`, `background_img_url`, `create_time`) VALUES ('%s', '%s', '%s')" % (
+            userid, img_fullpath, create_time)
+            db_setting.my_db(sql)
+            return {"code": '200', "image_url": img_fullpath, "message": "上传成功", "success": "true"}
 # from flask import Flask, request, Response, render_template
 # from werkzeug.utils import secure_filename
 # import os

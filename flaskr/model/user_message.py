@@ -17,11 +17,11 @@ def usermessage(app):
         else:
             # user_id=request.values.get('user_id')
             userid=(parse_token['data']['userid'])#查询用户id
-            sql = "select user_id,name,birth_day,sex,hobby,province,city,self_description,avatar_image_url from user_message INNER JOIN user_avatar_image on id=user_id WHERE user_id='%s' ORDER BY user_avatar_image.create_time DESC LIMIT 1" % (userid)
+            sql = "select a.user_id,name,birth_day,sex,hobby,province,city,self_description,avatar_image_url,background_img_url from (select user_id,name,birth_day,sex,hobby,province,city,self_description,avatar_image_url from user_message INNER JOIN user_avatar_image on id=user_id WHERE user_id='%s' ORDER BY user_avatar_image.create_time DESC LIMIT 1)a INNER JOIN user_backgd_image as b where a.user_id =b.user_id ORDER BY b.create_time DESC LIMIT 1" % (userid)
             # db_setting.my_db(sql)
             #查询用户关注和粉丝数量
             sql2="select follow_count,be_follow_count as fans_count  from (select count(*) as follow_count from follow_history where follow_user_id='%s' and follow_status=1)as a,(select count(*) as be_follow_count  from follow_history where be_follow_user_id='%s' and follow_status=1)as b"%(userid,userid)
-            tinydict = {'user_id':"",'user_name': '', 'birthday': '', 'sex': '','hobby': '','province': '','city': '','self_description':'','avatar_image_url':''}
+            tinydict = {'user_id':"",'user_name': '', 'birthday': '', 'sex': '','hobby': '','province': '','city': '','self_description':'','avatar_image_url':'','background_img_url':''}
             list1=list_method.list_method(sql,tinydict)
             tinydict2={"follow_count":'',"fans_count":""}
             resp=[]
@@ -34,11 +34,11 @@ def usermessage(app):
     def select_authorinfo():  # 查看作者信息
         # user_id=request.values.get('user_id')
         author_id = request.values.get('author_id')  # 查询用户id
-        sql = "select user_id,name,birth_day,sex,hobby,province,city,self_description,avatar_image_url from user_message INNER JOIN user_avatar_image on id=user_id WHERE user_id='%s' ORDER BY user_avatar_image.create_time DESC LIMIT 1" % (
+        sql = "select a.user_id,name,birth_day,sex,hobby,province,city,self_description,avatar_image_url,background_img_url from (select user_id,name,birth_day,sex,hobby,province,city,self_description,avatar_image_url from user_message INNER JOIN user_avatar_image on id=user_id WHERE user_id='%s' ORDER BY user_avatar_image.create_time DESC LIMIT 1) as a left JOIN user_backgd_image as b on a.user_id =b.user_id ORDER BY b.create_time DESC LIMIT 1" % (
             author_id)
         db_setting.my_db(sql)
         tinydict = {'user_id': "", 'user_name': '', 'birthday': '', 'sex': '', 'hobby': '', 'province': '',
-                    'city': '', 'self_description': '', 'avatar_image_url': ''}
+                    'city': '', 'self_description': '', 'avatar_image_url': '','background_img_url':''}
         list_method.list_method(sql, tinydict)
         return {"code": 200, "message": "ok", "data": tinydict, "success": "true"}
         # return Response(json.dumps(tinydict,ensure_ascii=False),mimetype='application/json')

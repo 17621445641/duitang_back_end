@@ -35,12 +35,21 @@ def img_save(img_data,img_category):
         image_url = 'http://127.0.0.1:8998/static/article_img/'
         all_image_fullpath = []
         for avatar_image in img_data:
+            print(avatar_image)
             if avatar_image and allowed_file(avatar_image.filename):
                 image_fullpath = img_transformation(avatar_image)
                 all_image_fullpath.append(image_fullpath)
             else:
                 return "图片格式有误"
         return all_image_fullpath
+    elif(img_category==3):#背景图片
+        upload_folder = './static/background_images/'
+        image_url = 'http://127.0.0.1:8998/static/background_images/'
+        if img_data and allowed_file(img_data.filename):
+            image_fullpath = img_transformation(img_data)
+            return image_fullpath
+        else:
+            return "图片格式有误"
     else:
         return "暂无其他种类图片"
 

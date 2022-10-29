@@ -78,7 +78,7 @@ def article_views(app):
             return {"code": 3, "message": "非法的token","success": "false"}
         else:
             userid = (parse_token['data']['userid'])  # 查询用户id
-            sql = "select  a.user_id,b.id,b.article_title,author_id,article_content,view_status,b.create_time as article_createtime,a.update_time as views_time from article_views as a INNER JOIN article as b on a.article_id=b.id and a.user_id='%s'  and article_id not in(select article_id from article_views as a INNER JOIN article as b on a.article_id=b.id and user_id!=author_id and view_status=0 and user_id='%s')ORDER BY views_time DESC" % (
+            sql = "select  a.user_id,b.id,b.article_title,author_id,article_content,view_status,b.create_time as article_createtime,a.update_time as views_time from article_views as a INNER JOIN article as b on a.article_id=b.id and a.user_id='%s' and is_delete!=1  and article_id not in(select article_id from article_views as a INNER JOIN article as b on a.article_id=b.id and user_id!=author_id and view_status=0 and user_id='%s')ORDER BY views_time DESC" % (
                 userid,userid)
             dict = {'user_id': '', 'article_id': '', 'article_title': '', 'author_id': '', 'article_content': '',
                     'view_status': '', 'article_create_time': '','views_time':''}
